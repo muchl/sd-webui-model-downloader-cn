@@ -73,20 +73,27 @@ def request_civitai_detail(url):
         return False, res.text
 
 def resp_to_components(resp):
-    if resp == None:
+    if resp is None:
         return [None, None, None, None, None, None, None, None, None, None]
 
     img = resp["version"]["image"]["url"]
     if img:
         img = process_image(img)
 
+    trained_words = resp["version"].get("trainedWords", [])
+    if not trained_words:
+        trained_words = ["girl"]
+
+    trained_words_str = ", ".join(trained_words)
+    updated_at = resp["version"].get("updatedAt", "N/A")
+
     return [
         resp["name"],
         resp["type"],
-        ", ".join(resp["version"]["trainedWords"]),
+        trained_words_str,
         resp["creator"]["username"],
         ", ".join(resp["tags"]),
-        resp["version"]["updatedAt"],
+        updated_at,
         resp["description"],
         img,
         resp["version"]["file"]["name"],
